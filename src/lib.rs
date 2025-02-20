@@ -286,7 +286,7 @@ use proc_macro2::Span;
 use quote::{quote, ToTokens};
 
 use std::cell::Cell;
-use std::panic::{catch_unwind, resume_unwind, AssertUnwindSafe, UnwindSafe};
+use std::panic::{catch_unwind, resume_unwind, UnwindSafe};
 
 pub mod dummy;
 
@@ -492,7 +492,7 @@ where
     F: FnOnce() -> proc_macro2::TokenStream + UnwindSafe,
 {
     ENTERED_ENTRY_POINT.with(|flag| flag.set(flag.get() + 1));
-    let caught = catch_unwind(AssertUnwindSafe(f));
+    let caught = catch_unwind(f);
     let dummy = dummy::cleanup();
     let err_storage = imp::cleanup();
     ENTERED_ENTRY_POINT.with(|flag| flag.set(flag.get() - 1));
